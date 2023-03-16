@@ -1,26 +1,16 @@
 package com.example.assignment1
 
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-
 class NewGameActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.new_game)
-
-        /*val userDiceOne :ImageView = findViewById(R.id.userDieOne)
-        val userDiceTwo :ImageView = findViewById(R.id.userDieTwo)
-        val userDiceThree :ImageView = findViewById(R.id.userDieThree)
-        val userDiceFour :ImageView = findViewById(R.id.userDieFour)
-        val userDiceFive :ImageView = findViewById(R.id.userDieFive)*/
-
-        //val userDiceImageViews = arrayOf(userDiceOne, userDiceTwo, userDiceThree, userDiceFour, userDiceFive)
 
         val dice1 = Dice(findViewById(R.id.userDieOne))
         val dice2 = Dice(findViewById(R.id.userDieTwo))
@@ -30,12 +20,6 @@ class NewGameActivity: AppCompatActivity() {
 
         val userDice = arrayOf(dice1, dice2, dice3, dice4,dice5)
 
-        /*val compDiceOne: ImageView = findViewById(R.id.compDieOne)
-        val compDiceTwo: ImageView = findViewById(R.id.compDieTwo)
-        val compDiceThree: ImageView = findViewById(R.id.compDieThree)
-        val compDiceFour: ImageView = findViewById(R.id.compDieFour)
-        val compDiceFive: ImageView = findViewById(R.id.compDieFive)*/
-
         val compDice1 = Dice(findViewById(R.id.compDieOne))
         val compDice2 = Dice(findViewById(R.id.compDieTwo))
         val compDice3 = Dice(findViewById(R.id.compDieThree))
@@ -44,33 +28,46 @@ class NewGameActivity: AppCompatActivity() {
 
         val computerDice = arrayOf(compDice1, compDice2, compDice3, compDice4, compDice5)
 
+        val human: HumanPlayer = HumanPlayer(this)
+        val computer: DummyComputerPlayer = DummyComputerPlayer(this)
+
+        //-------------------------------------------------------------------------------------------
+
         val throwButton: Button = findViewById(R.id.throwBtn)
         throwButton.setOnClickListener {
-            rollDice(dice1,dice2, dice3, dice4, dice5, compDice1, compDice2, compDice3, compDice4, compDice5)
+            if (human.getRolledCount() == 0 && computer.getRolledCount() == 0) {
+                human.rollDice(*userDice)
+                setListeners(userDice)
+
+                computer.rollDice(*computerDice)
+            } else {
+                setListeners(userDice)
+                human.reRoll(userDice)
+
+                if (computer.chooseReRoll()) {
+                    computer.reRoll(computerDice)
+                }
+            }
         }
 
         val scoreButton: Button = findViewById(R.id.scoreBtn)
+
         scoreButton.setOnClickListener {
+            if (computer.chooseReRoll()) {
+                computer.reRoll(computerDice)
+            }
 
-            updateScore(calculateScore(userDice),
-            calculateScore(computerDice))
+            human.setRolledCount(0)
+            computer.setRolledCount(0)
+
+            for(n in userDice){
+                n.resetAppearance()
+            }
+                //ENABLE DISABLE THE THROW BUTTON
+            updateScore(human.calculateScore(userDice),
+                computer.calculateScore(computerDice))
+
         }
-
-    }
-
-    private fun rollDice(vararg dice: Dice){
-        for (die in dice)
-            die.roll()
-
-    }
-
-    private fun calculateScore(array: Array<Dice>): Int{
-        var score = 0
-        for(n in array){
-            score += n.score()
-        }
-
-        return score
     }
 
     private fun updateScore(userScore: Int, compScore: Int){
@@ -83,6 +80,9 @@ class NewGameActivity: AppCompatActivity() {
             //https://stackoverflow.com/questions/8517730/how-to-get-text-from-textview
 
             divideScores = scoreText.split("/").toTypedArray()
+            println(divideScores[0] +" " +divideScores[1])
+
+            println("user Score: $userScore comp score: $compScore" )
             val newUserScore = divideScores[0].toInt() + userScore
             val newCompScore = divideScores[1].toInt() + compScore
 
@@ -90,25 +90,31 @@ class NewGameActivity: AppCompatActivity() {
 
             score.text = result
         }
-
     }
 
-
-    fun checkSelected(array: Array<Dice>){
-        //set mouse click appearance pass the relevant image views only
+    private fun setListeners(array: Array<Dice>){
         var imageView: ImageView?
-        for(die in array){
+
+        for (die in array){
             imageView = die.getImageResource()
-            if(imageView.paddingLeft == 0){
-                imageView.setPadding(5, 5,5,5)
-                imageView.setBackgroundColor(Color.GREEN)
-            }
-            else{
-                imageView.setPadding(0,0,0,0)
-                imageView.setBackgroundColor(Color.WHITE)
+            imageView.setOnClickListener{
+                die.setClicked(true)
+                setAppearance(die)
             }
         }
-        
     }
+
+    private fun setAppearance(die: Dice){
+        //set mouse click appearance pass the relevant image views only
+        val imageView: ImageView?
+
+        imageView = die.getImageResource()
+        if (imageView.paddingLeft == 0) {
+            die.setAppearance()
+        } else {
+            die.resetAppearance()
+        }
+    }
+
 
 }

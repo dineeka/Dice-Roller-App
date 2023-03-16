@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/game_name"
-        android:textSize="64dp"
+        android:textSize="64sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,21 +23,23 @@
         android:layout_width="201dp"
         android:layout_height="88dp"
         android:layout_marginStart="52dp"
+        android:layout_marginTop="300dp"
         android:text="@string/btn_new"
-        android:textSize="24dp"
-        app:layout_constraintStart_toStartOf="@id/title"
-        tools:layout_editor_absoluteY="338dp"
-        tools:ignore="MissingConstraints" />
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.335"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
     <Button
         android:id="@+id/aboutBtn"
         android:layout_width="201dp"
         android:layout_height="88dp"
         android:text="@string/btn_about"
-        android:textSize="24dp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="104dp"
-        tools:layout_editor_absoluteY="492dp" />
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/newBtn"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
